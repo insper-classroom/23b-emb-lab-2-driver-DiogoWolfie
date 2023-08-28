@@ -78,6 +78,62 @@ void init(void);
 /************************************************************************/
 /* funcoes                                                              */
 /************************************************************************/
+void _pio_set(Pio *p_pio, const uint32_t ul_mask)
+{
+	p_pio -> PIO_SODR = ul_mask;
+}
+
+void _pio_clear(Pio *p_pio, const uint32_t ul_mask)
+{
+	p_pio -> PIO_CODR = ul_mask;
+}
+
+void _pio_pull_up(Pio *p_pio, const uint32_t ul_mask, const uint32_t ul_pull_up_enable){
+	if(ul_pull_up_enable == 1){
+		p_pio -> PIO_PUER = ul_mask;
+		}else{
+		p_pio -> PIO_PUDR = ul_mask;
+	}
+}
+
+void _pio_set_input(Pio *p_pio, const uint32_t ul_mask, const uint32_t ul_attribute)
+{
+	_pio_pull_up(p_pio, ul_mask, ul_attribute);
+	if(ul_attribute == PIO_DEGLITCH){
+		p_pio -> PIO_IFER = ul_mask;
+		
+	}
+	if(ul_attribute == PIO_DEBOUNCE){
+		p_pio -> PIO_IFDR = ul_mask;
+	}
+}
+
+void _pio_set_output(Pio *p_pio, const uint32_t ul_mask, const uint32_t ul_default_level, const uint32_t ul_multidrive_enable, const uint32_t ul_pull_up_enable)
+{
+	//passo 1
+	p_pio->PIO_PER = ul_mask;
+	p_pio->PIO_OER = ul_mask; //passo 2
+	
+	//passo 3
+	if (ul_default_level){
+		_pio_set(p_pio,ul_mask);
+	}else{
+		_pio_clear(p_pio,ul_mask);
+	}
+	//passo 4
+	if (ul_multidrive_enable){
+		p_pio->PIO_MDER = ul_mask;
+	}else{
+		p_pio->PIO_MDDR = ul_mask;
+	}
+	//passo 5
+	if (ul_pull_up_enable){
+		_pio_pull_up(p_pio,ul_mask,1);
+	}
+	
+
+}
+
 
 // Função de inicialização do uC
 void init(void) {
@@ -95,37 +151,14 @@ void init(void) {
   pmc_enable_periph_clk(BUT2_PIO_ID);
   pmc_enable_periph_clk(BUT3_PIO_ID);
 
-void _pio_pull_up(Pio *p_pio, const uint32_t ul_mask, const uint32_t ul_pull_up_enable){
-	if(ul_pull_up_enable == 1){
-		p_pio -> PIO_PUER = ul_mask;
-	}else{
-		p_pio -> PIO_PUDR = ul_mask;
-	}
- }
- 
- void _pio_set_input(Pio *p_pio, const uint32_t ul_mask, const uint32_t ul_attribute)
-{
-	_pio_pull_up(p_pio, ul_mask, ul_attribute);
-	if(ul_attribute && PIO_PULLUP){
-		p_pio -> PIO_IFER = ul_mask;
-		
-	}else{
-		p_pio -> PIO_IFDR = ul_mask;
-	}
-}
-
-void _pio_set_output(Pio *p_pio, const uint32_t ul_mask, const uint32_t ul_default_level, const uint32_t ul_multidrive_enable, const uint32_t ul_pull_up_enable)
-{
 	
 
-}
-
   // Inicializa PC8 como saída
-  pio_set_output(LED_PIO, LED_PIO_IDX_MASK, 0, 0, 0);
+  _pio_set_output(LED_PIO, LED_PIO_IDX_MASK, 0, 0, 0);
 
-  pio_set_output(LED1_PIO, LED1_PIO_IDX_MASK, 0, 0, 0);
-  pio_set_output(LED2_PIO, LED2_PIO_IDX_MASK, 0, 0, 0);
-  pio_set_output(LED3_PIO, LED3_PIO_IDX_MASK, 0, 0, 0);
+  _pio_set_output(LED1_PIO, LED1_PIO_IDX_MASK, 0, 0, 0);
+  _pio_set_output(LED2_PIO, LED2_PIO_IDX_MASK, 0, 0, 0);
+  _pio_set_output(LED3_PIO, LED3_PIO_IDX_MASK, 0, 0, 0);
 
   _pio_set_input(BUT1_PIO, BUT1_PIO_IDX_MASK, PIO_DEFAULT);
   _pio_set_input(BUT2_PIO, BUT2_PIO_IDX_MASK, PIO_DEFAULT);
@@ -145,15 +178,7 @@ void _pio_set_output(Pio *p_pio, const uint32_t ul_mask, const uint32_t ul_defau
  * \param p_pio Pointer to a PIO instance.
  * \param ul_mask Bitmask of one or more pin(s) to configure.
  */
-void _pio_set(Pio *p_pio, const uint32_t ul_mask)
-{
-	p_pio -> PIO_SODR = ul_mask;
-}
 
-void _pio_clear(Pio *p_pio, const uint32_t ul_mask){
-	
-	p_pio -> PIO_CODR = ul_mask; 
-}
 
 
 /************************************************************************/
@@ -174,7 +199,7 @@ int main(void) {
         _pio_clear(LED1_PIO, LED1_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_set(LED1_PIO, LED1_PIO_IDX_MASK);
+      _pio_clear(LED1_PIO, LED1_PIO_IDX_MASK);
     }
     if (!pio_get(BUT2_PIO, PIO_INPUT,
                  BUT2_PIO_IDX_MASK)) { // Caso aperte Botao 2
@@ -184,7 +209,7 @@ int main(void) {
         _pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_set(LED2_PIO, LED2_PIO_IDX_MASK);
+      _pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
     }
     if (!pio_get(BUT3_PIO, PIO_INPUT,
                  BUT3_PIO_IDX_MASK)) { // Caso aperte Botao 3
@@ -194,7 +219,7 @@ int main(void) {
         _pio_clear(LED3_PIO, LED3_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_set(LED3_PIO, LED3_PIO_IDX_MASK);
+      _pio_clear(LED3_PIO, LED3_PIO_IDX_MASK);
     }
   }
   // nunca devemos chegar aqui!
