@@ -17,23 +17,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   6 .comment      00000059  00000000  00000000  0002046a  2**0
                   CONTENTS, READONLY
-  7 .debug_info   0000b3fa  00000000  00000000  000204c3  2**0
+  7 .debug_info   0000b421  00000000  00000000  000204c3  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_abbrev 0000189a  00000000  00000000  0002b8bd  2**0
+  8 .debug_abbrev 000018ab  00000000  00000000  0002b8e4  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_loc    00002886  00000000  00000000  0002d157  2**0
+  9 .debug_loc    00002886  00000000  00000000  0002d18f  2**0
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_aranges 00000570  00000000  00000000  0002f9dd  2**0
+ 10 .debug_aranges 00000570  00000000  00000000  0002fa15  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_ranges 00000678  00000000  00000000  0002ff4d  2**0
+ 11 .debug_ranges 00000678  00000000  00000000  0002ff85  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_macro  0001c020  00000000  00000000  000305c5  2**0
+ 12 .debug_macro  0001c020  00000000  00000000  000305fd  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_line   00006901  00000000  00000000  0004c5e5  2**0
+ 13 .debug_line   00006901  00000000  00000000  0004c61d  2**0
                   CONTENTS, READONLY, DEBUGGING
- 14 .debug_str    000890b0  00000000  00000000  00052ee6  2**0
+ 14 .debug_str    000890b1  00000000  00000000  00052f1e  2**0
                   CONTENTS, READONLY, DEBUGGING
- 15 .debug_frame  00000cc0  00000000  00000000  000dbf98  2**2
+ 15 .debug_frame  00000cc0  00000000  00000000  000dbfd0  2**2
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -1167,8 +1167,8 @@ void init(void) {
   pmc_enable_periph_clk(BUT3_PIO_ID);
   400706:	200a      	movs	r0, #10
   400708:	47a0      	blx	r4
-		p_pio -> PIO_IFDR = ul_mask;
-	}
+	
+
 }
 
   // Inicializa PC8 como saída
@@ -1265,7 +1265,7 @@ int main(void) {
         _pio_clear(LED1_PIO, LED1_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_clear(LED1_PIO, LED1_PIO_IDX_MASK);
+      _pio_set(LED1_PIO, LED1_PIO_IDX_MASK);
     }
     if (!pio_get(BUT2_PIO, PIO_INPUT,
   4007a0:	f8df 80c4 	ldr.w	r8, [pc, #196]	; 400868 <main+0xd4>
@@ -1274,13 +1274,13 @@ int main(void) {
         delay_ms(200);
   4007a6:	4c2c      	ldr	r4, [pc, #176]	; (400858 <main+0xc4>)
   4007a8:	e04e      	b.n	400848 <main+0xb4>
-	p_pio -> PIO_CODR = ul_mask; 
+	p_pio -> PIO_SODR = ul_mask;
   4007aa:	f04f 4380 	mov.w	r3, #1073741824	; 0x40000000
-  4007ae:	f8c8 3034 	str.w	r3, [r8, #52]	; 0x34
+  4007ae:	f8c8 3030 	str.w	r3, [r8, #48]	; 0x30
         _pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
+      _pio_set(LED2_PIO, LED2_PIO_IDX_MASK);
     }
     if (!pio_get(BUT3_PIO, PIO_INPUT,
   4007b2:	f44f 2200 	mov.w	r2, #524288	; 0x80000
@@ -1313,9 +1313,9 @@ int main(void) {
       for (int i = 0; i < 5; i++) {
   4007e8:	3d01      	subs	r5, #1
   4007ea:	d1f5      	bne.n	4007d8 <main+0x44>
-	p_pio -> PIO_CODR = ul_mask; 
+	p_pio -> PIO_SODR = ul_mask;
   4007ec:	2301      	movs	r3, #1
-  4007ee:	6373      	str	r3, [r6, #52]	; 0x34
+  4007ee:	6333      	str	r3, [r6, #48]	; 0x30
     if (!pio_get(BUT2_PIO, PIO_INPUT,
   4007f0:	f04f 4200 	mov.w	r2, #2147483648	; 0x80000000
   4007f4:	f04f 5120 	mov.w	r1, #671088640	; 0x28000000
@@ -1367,10 +1367,10 @@ int main(void) {
       for (int i = 0; i < 5; i++) {
   40083e:	3d01      	subs	r5, #1
   400840:	d1f5      	bne.n	40082e <main+0x9a>
-	p_pio -> PIO_CODR = ul_mask; 
+	p_pio -> PIO_SODR = ul_mask;
   400842:	2204      	movs	r2, #4
   400844:	4b07      	ldr	r3, [pc, #28]	; (400864 <main+0xd0>)
-  400846:	635a      	str	r2, [r3, #52]	; 0x34
+  400846:	631a      	str	r2, [r3, #48]	; 0x30
     if (!pio_get(BUT1_PIO, PIO_INPUT,
   400848:	f8df 9020 	ldr.w	r9, [pc, #32]	; 40086c <main+0xd8>
   40084c:	e7b8      	b.n	4007c0 <main+0x2c>

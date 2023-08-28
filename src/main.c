@@ -174,7 +174,7 @@ int main(void) {
         _pio_clear(LED1_PIO, LED1_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_clear(LED1_PIO, LED1_PIO_IDX_MASK);
+      _pio_set(LED1_PIO, LED1_PIO_IDX_MASK);
     }
     if (!pio_get(BUT2_PIO, PIO_INPUT,
                  BUT2_PIO_IDX_MASK)) { // Caso aperte Botao 2
@@ -184,7 +184,7 @@ int main(void) {
         _pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_clear(LED2_PIO, LED2_PIO_IDX_MASK);
+      _pio_set(LED2_PIO, LED2_PIO_IDX_MASK);
     }
     if (!pio_get(BUT3_PIO, PIO_INPUT,
                  BUT3_PIO_IDX_MASK)) { // Caso aperte Botao 3
@@ -194,7 +194,7 @@ int main(void) {
         _pio_clear(LED3_PIO, LED3_PIO_IDX_MASK);
         delay_ms(200);
       }
-      _pio_clear(LED3_PIO, LED3_PIO_IDX_MASK);
+      _pio_set(LED3_PIO, LED3_PIO_IDX_MASK);
     }
   }
   // nunca devemos chegar aqui!
